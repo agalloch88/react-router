@@ -5,16 +5,26 @@ import './App.css';
 import Home from './components/Home';
 import Vitamin from './components/Vitamin';
 import Navigation from './components/Navigation';
+import ProductDetails from './components/ProductDetails';
+import data from './data/data.json';
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       toggleLogo: true,
+      cards: [],
     }
     this.toggleLogo = this.toggleLogo.bind(this);
     this.openNav = this.openNav.bind(this);
     this.closeNav = this.closeNav.bind(this);
+  }
+
+  //WARNING! To be deprecated in React v17. Use componentDidMount instead.
+  componentWillMount() {
+    this.setState({
+      cards: data,
+    });
   }
 
   toggleLogo(event) {
@@ -50,8 +60,16 @@ class App extends Component {
             <Navigation closeNav={this.closeNav} />
           </header>
           <Switch>
-            <Route exact path='/' component={Home} />
+            <Route exact path='/' render={(props) => (
+              <Home cards={this.state.cards} />
+            )} />
             <Route exact path='/vitamin' component={Vitamin} />
+            <Route exact path='/product/:id' render={(props) => {
+              let cardPosition = props.location.pathname.replace('/product/', '');
+              return (
+                <ProductDetails card={this.state.cards[cardPosition]} />
+              )
+            }} />
           </Switch>
         </div>
       </Router>
